@@ -9,7 +9,7 @@ using docker to develop and deploy
 
 to first build the docker:`docker-compose build`
 
-to init the golang modules: `docker compose run --rm app go mod init github.com/aicypxxx/escape-dan-back`
+to init the golang modules: `docker-compose run --rm app go mod init github.com/aicypxxx/escape-dan-back`
 
 ### other commands
 
