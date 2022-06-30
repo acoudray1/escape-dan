@@ -6,4 +6,8 @@ services:
       context: .
       target: dev
     volumes:
-      - .:/app
+      - .:/go/src/github.com/aicyp/escape-dan-back/
+    environment:
+      API_SERVER_ADDR: ":3000"
+    ports:
+    - "3000:3000"
