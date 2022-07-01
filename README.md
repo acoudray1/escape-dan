@@ -8,22 +8,25 @@ using docker to develop and deploy
 ## Project architecture
 the base architecture is based on this [github repository](https://github.com/golang-standards/project-layout)
 
-## Deployment
+## Docker management
+### Deployment
 
 to first build the docker:`docker-compose build`
 to init the golang modules: `docker-compose run --rm app go mod init github.com/aicyp/escape-dan-back`
 run the following command to start: `docker-compose up`
 run the following command to stop: `docker-compose down`
 
-### Air setup
-
-run Air: `docker-compose run --rm app air init`
+### Development
+tidy up the modules: `docker compose run --rm app go mod tidy`
+to rebuild only changed containers: `docker-compose up -d --build`
 
 ### Other commands
-tidy up the modules: `docker compose run --rm app go mod tidy`
 to check services running: `docker ps`
 
-go in the container shell: `docker run --rm -it <image hash/name> /bin/sh`
+start container and access its shell: `docker run --rm -it <image hash/name> /bin/sh`
+go in the running container shell: `docker exec -it <image hash/name> /bin/sh`
+
+copy file from docker container to local machine: `docker cp <id>:/go/src/github.com/aicyp/escape-dan-back/<file_name> Y:\Documents\Code\escape-dan-back\`
 
 -----
 

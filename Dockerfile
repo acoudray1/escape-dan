@@ -12,17 +12,18 @@ WORKDIR /go/src/github.com/aicyp/escape-dan-back
 
 COPY . /go/src/github.com/aicyp/escape-dan-back
 
+# ----------------------------------------------------------------------
 # Lets get dependencies
-RUN go mod init github.com/aicyp/escape-dan-back
+# RUN go mod init github.com/aicyp/escape-dan-back
 
 # build modules and get dependencies
-RUN go get github.com/go-chi/chi github.com/go-chi/render github.com/lib/pq 
-RUN go build github.com/aicyp/escape-dan-back/models
-RUN go build github.com/aicyp/escape-dan-back/controllers
-RUN go build github.com/aicyp/escape-dan-back/handlers
+# RUN go get github.com/go-chi/chi github.com/go-chi/render github.com/lib/pq 
+# RUN go build github.com/aicyp/escape-dan-back/models
+# RUN go build github.com/aicyp/escape-dan-back/controllers
+# RUN go build github.com/aicyp/escape-dan-back/handlers
 
-
-RUN go mod tidy
+# RUN go mod tidy
+# ----------------------------------------------------------------------
 
 # Note here: To avoid downloading dependencies every time we
 # build image. Here, we are caching all the dependencies by
@@ -31,8 +32,8 @@ RUN go mod tidy
 # are not changed.
 
 # Copy go mod and sum files
-# COPY go.mod ./
-# COPY go.sum ./
+COPY go.mod ./
+COPY go.sum ./
 
 # Download all dependencies.
 RUN go mod download
@@ -44,14 +45,16 @@ COPY . .
 # It is also a common best practise.
 
 # Build the application.
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/main .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./go/src/github.com/aicyp/escape-dan-back/bin/main .
 
 # Finally our multi-stage to build a small image
 # Start a new stage from scratch
-FROM scratch
+# FROM scratch
 
 # Copy the Pre-built binary file
-COPY --from=builder /go/src/github.com/aicyp/escape-dan-back/bin/main .
+# COPY --from=builder /go/src/github.com/aicyp/escape-dan-back/bin/main .
+
+# ENTRYPOINT ["/bin/sh"]
 
 # Run executable
-CMD ["./main"]
+CMD ["./go/src/github.com/aicyp/escape-dan-back/bin/main"]
