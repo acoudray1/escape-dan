@@ -15,7 +15,7 @@ func (db Database) GetAllUsers() (*models.UsersList, error) {
         return list, err
     }
     for rows.Next() {
-        var user models.Users
+        var user models.User
         err := rows.Scan(&user.Id, &user.Name, &user.Phone, &user.Mail)
         if err != nil {
             return list, err
@@ -29,7 +29,6 @@ func (db Database) GetAllUsers() (*models.UsersList, error) {
 // @return nil | error
 func (db Database) AddUser(user *models.User) error {
     var id int
-    var createdAt string
     query := `INSERT INTO users (name, phone, mail) VALUES ($1, $2, $3) RETURNING id`
     err := db.Conn.QueryRow(query, user.Name, user.Phone, user.Mail).Scan(&id)
     if err != nil {
@@ -71,12 +70,12 @@ func (db Database) DeleteUser(userId int) error {
 func (db Database) UpdateUser(userId int, userData models.User) (models.User, error) {
     user := models.User{}
     query := `UPDATE users SET name=$2, phone=$3, mail=$4 WHERE id=$1 RETURNING id, name, phone, mail;`
-    err := db.Conn.QueryRow(query, itemId, itemData.Name, itemData.Phone, itemData.Mail).Scan(&item.Id, &item.Name, &item.Phone, &item.Mail)
+    err := db.Conn.QueryRow(query, userId, userData.Name, userData.Phone, userData.Mail).Scan(&user.Id, &user.Name, &user.Phone, &user.Mail)
     if err != nil {
         if err == sql.ErrNoRows {
-            return item, ErrNoMatch
+            return user, ErrNoMatch
         }
-        return item, err
+        return user, err
     }
-    return item, nil
+    return user, nil
 }

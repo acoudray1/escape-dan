@@ -1,9 +1,7 @@
 package models
 
 import (
-    "fmt"
     "net/http"
-	"time"
 )
 
 type HistoryRecord struct {

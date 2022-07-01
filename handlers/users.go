@@ -9,8 +9,8 @@ import (
     "strconv"
     "github.com/go-chi/chi"
     "github.com/go-chi/render"
-    "github.com/aicyp/escape-dan-app/controllers"
-    "github.com/aicyp/escape-dan-app/models"
+    "github.com/aicyp/escape-dan-back/controllers"
+    "github.com/aicyp/escape-dan-back/models"
 )
 
 var userIdKey = "userId"
@@ -76,7 +76,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
     userId := r.Context().Value(userIdKey).(int)
     user, err := dbInstance.GetUserById(userId)
     if err != nil {
-        if err == db.ErrNoMatch {
+        if err == controllers.ErrNoMatch {
             render.Render(w, r, ErrNotFound)
         } else {
             render.Render(w, r, ErrorRenderer(err))
@@ -94,7 +94,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
     userId := r.Context().Value(userIdKey).(int)
     err := dbInstance.DeleteUser(userId)
     if err != nil {
-        if err == db.ErrNoMatch {
+        if err == controllers.ErrNoMatch {
             render.Render(w, r, ErrNotFound)
         } else {
             render.Render(w, r, ServerErrorRenderer(err))
@@ -113,7 +113,7 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
     }
     user, err := dbInstance.UpdateUser(userId, userData)
     if err != nil {
-        if err == db.ErrNoMatch {
+        if err == controllers.ErrNoMatch {
             render.Render(w, r, ErrNotFound)
         } else {
             render.Render(w, r, ServerErrorRenderer(err))

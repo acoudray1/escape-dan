@@ -3,8 +3,8 @@ package main
 import (
     "context"
     "fmt"
-    "github.com/aicyp/escape-dan-app/controllers"
-    "github.com/aicyp/handlers"
+    "github.com/aicyp/escape-dan-back/controllers"
+    "github.com/aicyp/escape-dan-back/handlers"
     "log"
     "net"
     "net/http"
@@ -27,7 +27,7 @@ func main() {
         os.Getenv("POSTGRES_PASSWORD"),
         os.Getenv("POSTGRES_DB")
 
-    database, err := db.Initialize(dbUser, dbPassword, dbName)
+    database, err := controllers.Initialize(dbUser, dbPassword, dbName)
 
     if err != nil {
         log.Fatalf("Could not set up database: %v", err)
@@ -35,7 +35,7 @@ func main() {
 
     defer database.Conn.Close()
 
-    httpHandler := handler.NewHandler(database)
+    httpHandler := handlers.NewHandler(database)
 
     server := &http.Server{
         Handler: httpHandler,

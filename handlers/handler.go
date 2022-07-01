@@ -4,12 +4,12 @@ import (
     "net/http"
     "github.com/go-chi/chi"
     "github.com/go-chi/render"
-    "github.com/aicyp/escape-dan-app/controllers"
+    "github.com/aicyp/escape-dan-back/controllers"
 )
 
-var dbInstance db_manager.Database
+var dbInstance controllers.Database
 
-func NewHandler(db db.Database) http.Handler {
+func NewHandler(db controllers.Database) http.Handler {
     router := chi.NewRouter()
     dbInstance = db
     router.MethodNotAllowed(methodNotAllowedHandler)
