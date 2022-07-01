@@ -15,6 +15,7 @@ import (
 
 var userIdKey = "userId"
 
+// to access the functions through REST, http://<ip>/users/<method>
 func users(router chi.Router) {
     router.Get("/", getAllUsers)
     router.Post("/", createUser)
