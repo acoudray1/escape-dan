@@ -1,59 +1,65 @@
 package main
 
 import (
-  "os"
-  "os/signal"
-  "syscall"
-
-  "github.com/aicyp/escape-dan-back/api"
-  "github.com/sirupsen/logrus"
-  "github.com/urfave/cli/v2"
-)
-
-const (
-  apiServerAddrFlagName string = "addr"
+    "context"
+    "fmt"
+    "github.com/aicyp/escape-dan-app/controllers"
+    "github.com/aicyp/handlers"
+    "log"
+    "net"
+    "net/http"
+    "os"
+    "os/signal"
+    "syscall"
+    "time"
 )
 
 func main() {
-  if err := app().Run(os.Args); err != nil {
-    logrus.WithError(err).Fatal("could not run application")
-  }
+    addr := ":8080"
+    listener, err := net.Listen("tcp", addr)
+	
+    if err != nil {
+        log.Fatalf("Error occurred: %s", err.Error())
+    }
+
+    dbUser, dbPassword, dbName :=
+        os.Getenv("POSTGRES_USER"),
+        os.Getenv("POSTGRES_PASSWORD"),
+        os.Getenv("POSTGRES_DB")
+
+    database, err := db.Initialize(dbUser, dbPassword, dbName)
+
+    if err != nil {
+        log.Fatalf("Could not set up database: %v", err)
+    }
+
+    defer database.Conn.Close()
+
+    httpHandler := handler.NewHandler(database)
+
+    server := &http.Server{
+        Handler: httpHandler,
+    }
+
+    go func() {
+        server.Serve(listener)
+    }()
+
+    defer Stop(server)
+    log.Printf("Started server on %s", addr)
+    ch := make(chan os.Signal, 1)
+    signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+    log.Println(fmt.Sprint(<-ch))
+    log.Println("Stopping API server.")
 }
 
-func app() *cli.App {
-  return &cli.App{
-    Name:  "api-server",
-    Usage: "The API",
-    Commands: []*cli.Command{
-      apiServerCmd(),
-    },
-  }
-}
+func Stop(server *http.Server) {
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 
-func apiServerCmd() *cli.Command {
-  return &cli.Command{
-    Name:  "start",
-    Usage: "starts the API server",
-    Flags: []cli.Flag{
-      &cli.StringFlag{Name: apiServerAddrFlagName, EnvVars: []string{"API_SERVER_ADDR"}},
-    },
-    Action: func(c *cli.Context) error {
-      done := make(chan os.Signal, 1)
-      signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+    defer cancel()
 
-      stopper := make(chan struct{})
-      go func() {
-        <-done
-        close(stopper)
-      }()
-
-      addr := c.String(apiServerAddrFlagName)
-      server, err := api.NewAPIServer(addr)
-      if err != nil {
-        return err
-      }
-
-      return server.Start(stopper)
-    },
-  }
+    if err := server.Shutdown(ctx); err != nil {
+        log.Printf("Could not shut down server correctly: %v\n", err)
+        os.Exit(1)
+    }
 }

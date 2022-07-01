@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "local db",
+      "Group": "PostgreDBs",
+      "Port": 5432,
+      "Username": "danny",
+      "Host": "db",
+      "SSLMode": "prefer",
+      "MaintenanceDB": "postgres"
+    }
+  }
+}
