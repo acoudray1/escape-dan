@@ -54,15 +54,16 @@ func (db Database) GetUserById(userId int) (models.User, error) {
 
 // DeleteUser deletes a user from the database by id
 // @return nil | error
-func (db Database) DeleteUser(userId int) error {
+func (db Database) DeleteUser(userId int) (bool, error) {
     query := `DELETE FROM users WHERE id = $1;`
     _, err := db.Conn.Exec(query, userId)
     switch err {
     case sql.ErrNoRows:
-        return ErrNoMatch
+        return false, ErrNoMatch
     default:
-        return err
+        return false, err
     }
+    return true, nil
 }
 
 // UpdateUser updates a user from the database by id

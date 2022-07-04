@@ -93,13 +93,17 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 // Handler for the DeleteUser() function
 func deleteUser(w http.ResponseWriter, r *http.Request) {
     userId := r.Context().Value(userIdKey).(int)
-    err := dbInstance.DeleteUser(userId)
+    res, err := dbInstance.DeleteUser(userId)
     if err != nil {
         if err == controllers.ErrNoMatch {
             render.Render(w, r, ErrNotFound)
         } else {
             render.Render(w, r, ServerErrorRenderer(err))
         }
+        return
+    }
+    if err := render.Render(w, r, &res); err != nil {
+        render.Render(w, r, ServerErrorRenderer(err))
         return
     }
 }

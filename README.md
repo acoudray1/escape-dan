@@ -30,6 +30,4 @@ copy file from docker container to local machine: `docker cp <id>:/go/src/github
 
 -----
 
-https://firehydrant.com/blog/develop-a-go-app-with-docker-compose/
-https://medium.com/easyread/today-i-learned-golang-live-reload-for-development-using-docker-compose-air-ecc688ee076
-https://golangdocs.com/golang-docker
+https://blog.logrocket.com/how-to-build-a-restful-api-with-docker-postgresql-and-go-chi/
